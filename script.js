@@ -255,9 +255,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (button.classList.contains('check-answer-btn')) {
-            const container = button.parentElement;
-            const input = container.querySelector('.question-input');
-            const feedback = container.querySelector('.feedback-message');
+            // A correção está aqui: agora ele procura pelo container da pergunta inteira
+            const questionBlock = button.closest('.question-block');
+            if (!questionBlock) return;
+
+            const input = questionBlock.querySelector('.question-input');
+            const feedback = questionBlock.querySelector('.feedback-message');
             const userAnswer = input.value.trim().replace(",", ".");
             const correctAnswer = button.dataset.correctAnswer;
 
