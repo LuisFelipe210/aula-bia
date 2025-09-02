@@ -178,8 +178,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${topic.questions.map(q => `
                             <div class="question-block p-4">
                                 <p class="font-semibold text-slate-300">${q.text}</p>
-                                <div class="mt-2 flex items-center flex-wrap">
-                                    <input type="text" class="question-input" placeholder="Sua resposta...">
+                                <div class="mt-2 flex items-center">
+                                    <input type="text" class="question-input flex-1 min-w-0" placeholder="Sua resposta...">
                                     <button class="check-answer-btn" data-correct-answer="${q.correctAnswer}">Verificar</button>
                                     <span class="feedback-message hidden"></span>
                                 </div>
@@ -270,12 +270,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // NOVA FUNCIONALIDADE: Validar com a tecla Enter
-    topicsContentContainer.addEventListener('keydown', e => {
+    document.addEventListener('keydown', e => {
         if (e.key === 'Enter' && e.target.classList.contains('question-input')) {
-            const container = e.target.parentElement;
-            const checkButton = container.querySelector('.check-answer-btn');
-            if (checkButton) {
+            e.preventDefault();
+            const checkButton = e.target.nextElementSibling;
+            if (checkButton && checkButton.classList.contains('check-answer-btn')) {
                 checkButton.click();
             }
         }
