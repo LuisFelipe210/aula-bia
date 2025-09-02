@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     label: "8º Ano",
                     topics: [
                         { title: "Teorema de Pitágoras", content: `Este é um dos teoremas mais famosos da matemática e se aplica <strong>exclusivamente a triângulos retângulos</strong> (que têm um ângulo de 90°). Ele estabelece uma relação entre as medidas dos lados.<br/><br/>A fórmula é: <code>a² + b² = c²</code><br/>Onde:<ul><li><strong>a</strong> e <strong>b</strong> são os <strong>catetos</strong> (os lados que formam o ângulo de 90°).</li><li><strong>c</strong> é a <strong>hipotenusa</strong> (o lado oposto ao ângulo de 90°, sempre o maior lado).</li></ul>Se conhecemos as medidas de dois lados de um triângulo retângulo, podemos usar o teorema para encontrar a medida do terceiro.`, questions: [{ text: "Os catetos de um triângulo retângulo medem 6 cm e 8 cm. Qual a medida da hipotenusa?", correctAnswer: "10" }] },
-                        { title: "Produtos Notáveis e Fatoração", content: `São ferramentas que agilizam cálculos algébricos.<br/><br/><strong>Produtos Notáveis</strong> são padrões de multiplicação que aparecem com frequência:<ul><li>Quadrado da Soma: <code>(a+b)² = a² + 2ab + b²</code></li><li>Quadrado da Diferença: <code>(a-b)² = a² - 2ab + b²</code></li><li>Produto da Soma pela Diferença: <code>(a+b)(a-b) = a² - b²</code></li></ul><strong>Fatoração</strong> é o processo inverso: transformar uma expressão algébrica (soma) em um produto de fatores. É como "desmontar" a expressão. Ex: Fatorar <code>x² - 9</code> é reconhecer que é uma diferença de quadrados, resultando em <code>(x+3)(x-3)</code>.`, questions: [{ text: "Qual o resultado de (x - 4)²?", correctAnswer: "x^2 - 8x + 16" }] },
+                        { title: "Produtos Notáveis e Fatoração", content: `São ferramentas que agilizam cálculos algébricos.<br/><br/><strong>Produtos Notáveis</strong> são padrões de multiplicação que aparecem com frequência:<ul><li>Quadrado da Soma: <code>(a+b)² = a² + 2ab + b²</code></li><li>Quadrado da Diferença: <code>(a-b)² = a² - 2ab + b²</code></li><li>Produto da Soma pela Diferença: <code>(a+b)(a-b) = a² - b²</code></li></ul><strong>Fatoração</strong> é o processo inverso: transformar uma expressão algébrica (soma) em um produto de fatores. É como "desmontar" a expressão. Ex: Fatorar <code>x² - 9</code> é reconhecer que é uma diferença de quadrados, resultando em <code>(x+3)(x-3)</code>.`, questions: [{ text: "Qual o resultado de (x - 4)²?", correctAnswer: "" }] },
                         { title: "Sistemas de Equações de 1º Grau", content: `Um sistema de equações é um conjunto de duas ou mais equações com duas ou mais incógnitas. O objetivo é encontrar os valores das incógnitas que satisfazem <strong>todas</strong> as equações ao mesmo tempo.<br/><br/>Os métodos mais comuns para resolver sistemas com duas equações e duas incógnitas (x e y) são:<ul><li><strong>Método da Substituição:</strong> Isolar uma incógnita em uma das equações e substituir na outra.</li><li><strong>Método da Adição:</strong> Somar as duas equações (membro a membro) de forma a eliminar uma das incógnitas.</li></ul>`, questions: [{ text: "Resolva o sistema: x + y = 10 e x - y = 4. Qual o valor de x?", correctAnswer: "7" }] }
                     ]
                 },
@@ -178,12 +178,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${topic.questions.map(q => `
                             <div class="question-block p-4">
                                 <p class="font-semibold text-slate-300">${q.text}</p>
-                                <div class="mt-2 flex items-center">
-                                    <input type="text" class="question-input flex-1 min-w-0" placeholder="Sua resposta...">
-                                    <button class="check-answer-btn" data-correct-answer="${q.correctAnswer}">Verificar</button>
-                                    <span class="feedback-message hidden"></span>
+                                
+                                <div class="mt-2 flex flex-col gap-2">
+                                    <input type="text" class="question-input w-full" placeholder="Sua resposta...">
+                                    <div class="flex justify-end items-center min-h-[2rem]">
+                                        <span class="feedback-message hidden text-sm mr-auto font-medium"></span>
+                                        <button class="check-answer-btn" data-correct-answer="${q.correctAnswer}">Verificar</button>
+                                    </div>
                                 </div>
-                            </div>
+                                </div>
                         `).join('')}
                     </div>
                 </div>
@@ -273,9 +276,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', e => {
         if (e.key === 'Enter' && e.target.classList.contains('question-input')) {
             e.preventDefault();
-            const checkButton = e.target.nextElementSibling;
-            if (checkButton && checkButton.classList.contains('check-answer-btn')) {
-                checkButton.click();
+            // Procura o contêiner da pergunta e, dentro dele, o botão correspondente
+            const questionBlock = e.target.closest('.question-block');
+            if (questionBlock) {
+                const checkButton = questionBlock.querySelector('.check-answer-btn');
+                if (checkButton) {
+                    checkButton.click();
+                }
             }
         }
     });
