@@ -270,6 +270,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // NOVA FUNCIONALIDADE: Validar com a tecla Enter
+    topicsContentContainer.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && e.target.classList.contains('question-input')) {
+            const container = e.target.parentElement;
+            const checkButton = container.querySelector('.check-answer-btn');
+            if (checkButton) {
+                checkButton.click();
+            }
+        }
+    });
+
     flashcardArea.addEventListener('click', e => {
         const flashcard = e.target.closest('.flashcard');
         if (flashcard) {
