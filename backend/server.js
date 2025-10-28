@@ -7,6 +7,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/authRoutes');
 const contentRoutes = require('./routes/contentRoutes');
 const progressRoutes = require('./routes/progressRoutes');
+const enemRouter = require('./routes/enemRoutes'); // Importa a nova rota ENEM
 
 const app = express();
 const port = 3000;
@@ -28,6 +29,7 @@ app.use(express.static(frontendPath));
 app.use('/api/auth', authRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/progress', progressRoutes);
+app.use('/api/enem', enemRouter); // Usa a nova rota ENEM
 
 // --- ROTA "APANHA-TUDO" (DEVE SER A ÚLTIMA) ---
 app.get('/*', (req, res) => {
