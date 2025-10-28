@@ -1,8 +1,6 @@
 {
   "version": 2,
-]
   "installCommand": "npm install --prefix api",
-
   "builds": [
     {
       "src": "api/server.js",
