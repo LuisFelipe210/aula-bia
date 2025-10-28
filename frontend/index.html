@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Estudos de Matemática</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="antialiased">
+
+<div class="app-layout">
+    <aside class="sidebar">
+        <header class="sidebar-header">
+            <h1 class="text-2xl font-bold">
+                Plataforma<span class="text-gradient">BIA</span>
+            </h1>
+        </header>
+
+        <nav class="sidebar-nav">
+            <h2 class="nav-title">MENU PRINCIPAL</h2>
+            <div id="main-nav" class="nav-group">
+                <button data-target="content-area" class="tab-button active">
+                    <i class="ph-duotone ph-books"></i>
+                    <span>Guia de Estudos</span>
+                </button>
+                <button data-target="flashcard-area" class="tab-button">
+                    <i class="ph-duotone ph-cards"></i>
+                    <span>Flashcards</span>
+                </button>
+            </div>
+
+            <h2 class="nav-title">NÍVEL DE ENSINO</h2>
+            <div id="level-nav" class="nav-group">
+                <button data-level="fundamental1" class="level-tab active">Fundamental I</button>
+                <button data-level="fundamental2" class="level-tab">Fundamental II</button>
+                <button data-level="medio" class="level-tab">Ensino Médio</button>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="main-content-area">
+        <div id="content-area" class="main-content">
+            <div class="study-guide-container">
+                <nav id="grades-nav-container" class="sub-nav flex flex-wrap gap-2 mb-10"></nav>
+                <div id="topics-content-container" class="mt-4 space-y-4"></div>
+            </div>
+        </div>
+
+        <div id="flashcard-area" class="main-content hidden">
+            <h2 class="text-4xl font-bold text-center mb-10 text-gradient">Flashcards de Fórmulas</h2>
+            <div id="flashcards-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
