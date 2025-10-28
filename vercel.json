@@ -1,15 +1,22 @@
 {
   "version": 2,
+]
+  "installCommand": "npm install --prefix api",
+
   "builds": [
     {
-      "src": "bia/backend/server.js",
+      "src": "api/server.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "frontend/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "bia/backend/server.js"
+      "dest": "api/server.js"
     }
   ]
 }
