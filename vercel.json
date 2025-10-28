@@ -1,7 +1,21 @@
-
 {
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/(.*)", "destination": "/index.html" }
+  "version": 2,
+
+  "installCommand": "cd api && npm install",
+
+
+  "builds": [
+    {
+      "src": "api/server.js",
+      "use": "@vercel/node"
+    }
+  ],
+
+
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "api/server.js"
+    }
   ]
 }
