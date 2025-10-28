@@ -184,6 +184,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Inicia todo o processo!
     initializeApp();
 });
