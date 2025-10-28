@@ -16,34 +16,56 @@
 </head>
 <body class="antialiased">
 
-<div class="app-layout">
+<div id="app-container" class="app-layout">
     <aside class="sidebar">
-        <header class="sidebar-header">
-            <h1 class="text-2xl font-bold">
-                Plataforma<span class="text-gradient">BIA</span>
-            </h1>
-        </header>
+        <div>
+            <header class="sidebar-header">
+                <h1 class="text-2xl font-bold">
+                    Plataforma<span class="text-gradient">BIA</span>
+                </h1>
+            </header>
 
-        <nav class="sidebar-nav">
-            <h2 class="nav-title">MENU PRINCIPAL</h2>
-            <div id="main-nav" class="nav-group">
-                <button data-target="content-area" class="tab-button active">
-                    <i class="ph-duotone ph-books"></i>
-                    <span>Guia de Estudos</span>
-                </button>
-                <button data-target="flashcard-area" class="tab-button">
-                    <i class="ph-duotone ph-cards"></i>
-                    <span>Flashcards</span>
-                </button>
+            <div id="user-profile-section" class="user-profile hidden">
+                <i class="ph-duotone ph-user-circle"></i>
+                <span id="user-email-display" class="truncate"></span>
             </div>
 
-            <h2 class="nav-title">NÍVEL DE ENSINO</h2>
-            <div id="level-nav" class="nav-group">
-                <button data-level="fundamental1" class="level-tab active">Fundamental I</button>
-                <button data-level="fundamental2" class="level-tab">Fundamental II</button>
-                <button data-level="medio" class="level-tab">Ensino Médio</button>
-            </div>
-        </nav>
+            <nav class="sidebar-nav">
+                <h2 class="nav-title">MENU PRINCIPAL</h2>
+                <div id="main-nav" class="nav-group">
+                    <button data-target="content-area" class="tab-button active">
+                        <i class="ph-duotone ph-books"></i>
+                        <span>Guia de Estudos</span>
+                    </button>
+                    <button data-target="flashcard-area" class="tab-button">
+                        <i class="ph-duotone ph-cards"></i>
+                        <span>Flashcards</span>
+                    </button>
+                    <button data-target="profile-area" id="profile-btn" class="tab-button hidden">
+                        <i class="ph-duotone ph-chart-bar"></i>
+                        <span>Meu Progresso</span>
+                    </button>
+                </div>
+
+                <h2 class="nav-title">NÍVEL DE ENSINO</h2>
+                <div id="level-nav" class="nav-group">
+                    <button data-level="fundamental1" class="level-tab active">Fundamental I</button>
+                    <button data-level="fundamental2" class="level-tab">Fundamental II</button>
+                    <button data-level="medio" class="level-tab">Ensino Médio</button>
+                </div>
+            </nav>
+        </div>
+
+        <div id="auth-section">
+            <button id="login-btn" class="tab-button">
+                <i class="ph-duotone ph-sign-in"></i>
+                <span>Login / Registro</span>
+            </button>
+            <button id="logout-btn" class="tab-button logout-btn-style hidden">
+                <i class="ph-duotone ph-sign-out"></i>
+                <span>Sair</span>
+            </button>
+        </div>
     </aside>
 
     <main class="main-content-area">
@@ -59,7 +81,39 @@
             <div id="flashcards-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             </div>
         </div>
+
+        <div id="profile-area" class="main-content hidden">
+            <h2 class="text-4xl font-bold mb-10 text-gradient">Meu Progresso</h2>
+            <div id="profile-stats-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"></div>
+            <h3 class="text-2xl font-bold mb-6 text-slate-300">Histórico de Respostas</h3>
+
+            <div class="history-list-container">
+                <div id="profile-history-container" class="space-y-3"></div>
+            </div>
+        </div>
     </main>
+</div>
+
+<div id="auth-modal" class="auth-modal hidden">
+    <div class="auth-modal-content">
+        <button id="close-modal-btn" class="close-btn">&times;</button>
+        <form id="login-form">
+            <h3 class="text-2xl font-bold text-center mb-6">Login</h3>
+            <div id="login-error" class="error-message"></div>
+            <div class="input-group"><label for="login-email">Email</label><input type="email" id="login-email" required></div>
+            <div class="input-group"><label for="login-password">Senha</label><input type="password" id="login-password" required></div>
+            <button type="submit" class="submit-btn">Entrar</button>
+            <p class="switch-form-text">Não tem uma conta? <a href="#" id="show-register-form">Registre-se</a></p>
+        </form>
+        <form id="register-form" class="hidden">
+            <h3 class="text-2xl font-bold text-center mb-6">Registro</h3>
+            <div id="register-error" class="error-message"></div>
+            <div class="input-group"><label for="register-email">Email</label><input type="email" id="register-email" required></div>
+            <div class="input-group"><label for="register-password">Senha (mínimo 6 caracteres)</label><input type="password" id="register-password" required></div>
+            <button type="submit" class="submit-btn">Criar Conta</button>
+            <p class="switch-form-text">Já tem uma conta? <a href="#" id="show-login-form">Faça login</a></p>
+        </form>
+    </div>
 </div>
 
 <script src="script.js"></script>
