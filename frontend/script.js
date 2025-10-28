@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
     const showRegisterLink = document.getElementById('show-register-form');
-    const showLoginLink = document.getElementById('show-login-form');
+    const showLoginLink = document.getElementById('show-register-form'); // Corrigido
+    const showLoginLinkAuth = document.getElementById('show-login-form'); // Renomeado para evitar conflito
 
     const loginError = document.getElementById('login-error');
     const registerError = document.getElementById('register-error');
@@ -101,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     logoutBtn.addEventListener('click', () => {
         updateAuthState(false);
-        alert('Você saiu da sua conta.');
+        // Alert removido. A mudança de estado da UI e a navegação para a home já indicam sucesso.
         mainNav.querySelector('button[data-target="content-area"]').click();
     });
 
@@ -113,12 +114,15 @@ document.addEventListener('DOMContentLoaded', () => {
         registerForm.classList.remove('hidden');
     });
 
-    showLoginLink.addEventListener('click', (e) => {
+    showLoginLinkAuth.addEventListener('click', (e) => {
         e.preventDefault();
         registerForm.reset();
         registerError.style.display = 'none';
         registerForm.classList.add('hidden');
         loginForm.classList.remove('hidden');
+        // Limpa possíveis estilos de sucesso de um registro anterior
+        loginError.style.display = 'none';
+        loginError.style.cssText = '';
     });
 
     registerForm.addEventListener('submit', async (e) => {
@@ -129,8 +133,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const response = await fetch('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
         const data = await response.json();
         if (data.status === 'ok') {
-            alert('Registro bem-sucedido! Agora você pode fazer login.');
-            showLoginLink.click();
+            // Exibe mensagem de sucesso no modal do login (substituindo o alert)
+            loginError.textContent = 'Registro bem-sucedido! Agora você pode fazer login.';
+            loginError.style.color = '#34D399'; // Cor de sucesso (baseada no feedback-correct)
+            loginError.style.backgroundColor = 'rgba(52, 211, 153, 0.2)';
+            loginError.style.border = '1px solid #34D399';
+            loginError.style.display = 'block';
+
+            // Muda para o formulário de login
+            showLoginLinkAuth.click();
         } else {
             registerError.textContent = data.error;
             registerError.style.display = 'block';
@@ -139,7 +150,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        // Garante que a mensagem de sucesso ou erro anterior seja limpa/resetada antes da tentativa
         loginError.style.display = 'none';
+        loginError.style.cssText = '';
+
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
         const response = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
@@ -150,8 +164,10 @@ document.addEventListener('DOMContentLoaded', () => {
             authModal.classList.add('hidden');
             loginForm.reset();
         } else {
+            // Volta para os estilos de erro originais em caso de falha de login
             loginError.textContent = data.error;
             loginError.style.display = 'block';
+            // Garante que o CSS original do .error-message seja aplicado (removendo inline styles de sucesso)
         }
     });
 
@@ -192,6 +208,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const feedback = questionBlock.querySelector('.feedback-message');
             const isCorrect = userAnswer.trim().toLowerCase() === correctAnswer.trim().toLowerCase();
 
+            const token = localStorage.getItem('token'); // Verifica o token
+
+            // Aplica o feedback visual
             if (isCorrect) {
                 target.classList.add('correct');
                 feedback.textContent = 'Correto! ✨';
@@ -208,10 +227,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
+            // --- MENSAGEM PARA LOGAR ---
+            if (!token) {
+                // Se não estiver logado, adiciona a frase ao feedback
+                feedback.textContent += ' (Faça login/Registre-se para salvar o progresso! 🔒)';
+            }
+            // --- FIM DA MENSAGEM ---
+
             const accordionItem = target.closest('.accordion-item');
             const topicId = accordionItem.dataset.topicId;
             const topicTitle = accordionItem.dataset.topicTitle;
             const questionText = questionBlock.dataset.questionText;
+
+            // saveAnswerProgress verifica internamente o token e salva se estiver logado
             saveAnswerProgress(topicId, topicTitle, questionText, userAnswer, isCorrect);
         }
     });
@@ -240,28 +268,22 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('/api/progress/me', { headers: { 'Authorization': `Bearer ${token}` } });
             if (!response.ok) throw new Error('Falha ao buscar dados do perfil.');
-            const userData = await response.json();
-
-            const stats = {};
-            (userData.answerHistory || []).forEach(item => {
-                const grade = item.topicId ? item.topicId.gradeLabel : 'Desconhecido';
-                if (!stats[grade]) { stats[grade] = { correct: 0, total: 0 }; }
-                stats[grade].total++;
-                if (item.isCorrect) { stats[grade].correct++; }
-            });
+            // O backend agora retorna answerHistory E stats pré-calculados
+            const { answerHistory, stats } = await response.json();
 
             const statsContainer = document.getElementById('profile-stats-container');
-            if (Object.keys(stats).length === 0) {
+            // Apenas itera sobre os stats que vieram prontos do servidor
+            if (!stats || stats.length === 0) {
                 statsContainer.innerHTML = '<p class="text-slate-400 text-center">Nenhuma estatística disponível. Comece a responder às questões!</p>';
             } else {
-                statsContainer.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">` + Object.keys(stats).sort().map(grade => {
-                    const percent = Math.round((stats[grade].correct / stats[grade].total) * 100);
+                statsContainer.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">` + stats.map(item => {
+                    const percent = item.percent; // Usa a percentagem já calculada pelo backend
                     return `
                         <div class="stat-card">
-                            <h4>${grade}</h4>
+                            <h4>${item.grade}</h4>
                             <div class="stat-number ${percent >= 60 ? 'text-green-400' : 'text-red-400'}">${percent}%</div>
                             <div class="stat-details">
-                                <span class="correct-text">${stats[grade].correct} acertos</span> de ${stats[grade].total} questões
+                                <span class="correct-text">${item.correct} acertos</span> de ${item.total} questões
                             </div>
                         </div>
                     `;
@@ -269,10 +291,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const historyContainer = document.getElementById('profile-history-container');
-            if (!userData.answerHistory || userData.answerHistory.length === 0) {
+            // Apenas itera sobre o histórico
+            if (!answerHistory || answerHistory.length === 0) {
                 historyContainer.innerHTML = '<p class="text-slate-400 text-center">Seu histórico de respostas aparecerá aqui.</p>';
             } else {
-                historyContainer.innerHTML = [...userData.answerHistory].reverse().map(item => `
+                historyContainer.innerHTML = [...answerHistory].reverse().map(item => `
                     <div class="history-item ${item.isCorrect ? 'is-correct' : 'is-incorrect'}">
                         <div>
                             <p class="font-semibold">${item.topicTitle}</p>
@@ -286,6 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error("Erro ao carregar perfil:", error);
+            profileArea.innerHTML = '<h2 class="text-center text-red-500 mt-10">Não foi possível carregar o seu progresso.</h2>';
         }
     }
 

@@ -21,19 +21,44 @@ const protect = async (req, res, next) => {
     }
 };
 
-// Rota para obter o progresso do usuário logado (CORRIGIDA)
+// Rota para obter o progresso do usuário logado (CORRIGIDA E OTIMIZADA)
 router.get('/me', protect, async (req, res) => {
     try {
-        // Usamos .populate() para carregar os dados do tópico junto com o histórico
         const user = await User.findById(req.user._id)
             .select('-password')
             .populate({
                 path: 'answerHistory.topicId',
                 model: 'Topic',
-                select: 'gradeLabel' // Selecionamos apenas o campo que precisamos (gradeLabel)
+                select: 'gradeLabel' // Selecionamos o campo que precisamos (gradeLabel)
             });
-        res.json(user);
+
+        // 1. Cálculo das estatísticas no servidor
+        const statsMap = {};
+        (user.answerHistory || []).forEach(item => {
+            // Usa item.topicId.gradeLabel que foi populado.
+            // Se topicId for null (tópico excluído), usa 'Desconhecido'.
+            const grade = item.topicId ? item.topicId.gradeLabel : 'Desconhecido';
+            if (!statsMap[grade]) { statsMap[grade] = { correct: 0, total: 0 }; }
+            statsMap[grade].total++;
+            if (item.isCorrect) { statsMap[grade].correct++; }
+        });
+
+        // 2. Formata as estatísticas para envio ao cliente
+        const statsArray = Object.keys(statsMap).sort().map(grade => ({
+            grade: grade,
+            correct: statsMap[grade].correct,
+            total: statsMap[grade].total,
+            // Calcula a percentagem e arredonda
+            percent: Math.round((statsMap[grade].correct / statsMap[grade].total) * 100)
+        }));
+
+        // 3. Envia as estatísticas pré-calculadas e o histórico
+        res.json({
+            answerHistory: user.answerHistory,
+            stats: statsArray
+        });
     } catch (error) {
+        console.error("Erro ao buscar dados do usuário:", error);
         res.status(500).json({ message: 'Erro ao buscar dados do usuário.' });
     }
 });
