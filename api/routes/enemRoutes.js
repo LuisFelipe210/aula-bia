@@ -4,15 +4,6 @@ const router = express.Router();
 const ENEM_TOPIC_ID = "60a9c8f5f1b1c34a8e2f4d6d";
 const ENEM_API_BASE_URL = "https://api.enem.dev/v1/exams";
 
-// Importa fetch dependendo da versão do Node.js
-let fetch;
-try {
-    // Node.js 18+ tem fetch nativo
-    fetch = globalThis.fetch;
-} catch (e) {
-    // Node.js < 18 precisa do node-fetch
-    fetch = require('node-fetch');
-}
 
 /**
  * Busca questões de matemática do ENEM usando a API oficial do ENEM.dev
@@ -152,8 +143,8 @@ async function fetchEnemMathQuestions(year = 2020, limit = 10) {
 /**
  * Rota GET /api/enem/questions
  * Query params:
- *  - year: ano do ENEM (padrão: 2023)
- *  - limit: número máximo de questões (padrão: 10)
+ * - year: ano do ENEM (padrão: 2023)
+ * - limit: número máximo de questões (padrão: 10)
  */
 router.get('/questions', async (req, res) => {
     try {
@@ -267,10 +258,6 @@ router.get('/test', async (req, res) => {
     }
 });
 
-/**
- * Rota GET /api/enem/debug/:year
- * Retorna a estrutura completa de uma questão de matemática para debug
- */
 router.get('/debug/:year', async (req, res) => {
     try {
         const year = parseInt(req.params.year) || 2023;
